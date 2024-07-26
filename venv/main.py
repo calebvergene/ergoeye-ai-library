@@ -20,23 +20,30 @@ class poseDetector():
         self.pose = self.mpPose.Pose(self.static_image_mode, self.model_complexity, self.smooth_landmarks, self.enable_segmentation, self.smooth_segmentation, self.min_detection_confidence, self.min_tracking_confidence)
 
     
-    def findPose(self, img, draw=True):
+    def find_pose(self, img, draw=True):
 
         imgRGB = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        results = self.pose.process(imgRGB)
+        self.results = self.pose.process(imgRGB)
         ## Draws data from joint points on body in live video
-        if results.pose_landmarks:
+        if self.results.pose_landmarks:
             if draw:
-                self.mpDraw.draw_landmarks(img, results.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
+                self.mpDraw.draw_landmarks(img, self.results.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
         return img
 
-        """for id, landmark in enumerate(results.pose_landmarks.landmark):
-            height, width, channel = img.shape
-            # convert to pixel value
-            cx, cy = int(landmark.x * width), int(landmark.y * height)
-            cv2.circle(img, (cx,cy), 5, (255,0,0), cv2.FILLED)"""
+    def find_position(self, img, draw=True):
+        landmark_list = []
 
-    
+        if self.results.pose_landmarks:
+            for id, landmark in enumerate(self.results.pose_landmarks.landmark):
+                height, width, channel = img.shape
+                # convert to pixel value
+                cx, cy = int(landmark.x * width), int(landmark.y * height)
+                landmark_list.append([id, cx, cy])
+                cv2.circle(img, (cx,cy), 5, (255,0,0), cv2.FILLED)
+
+        return landmark_list
+
+        
 
 
 def main():
@@ -47,6 +54,7 @@ def main():
     ## Processes image frames
     while True:
         success, img = cap.read()
+
         # Break the loop if the video ends
         if not success:
             print("Finished processing video.")
@@ -56,7 +64,9 @@ def main():
             print("Warning: Captured frame is None.")
             continue
         
-        img = detector.findPose(img)
+        img = detector.find_pose(img)
+        landmark_list = detector.find_position(img)
+        print(landmark_list)
     
         cv2.imshow("Image", img)
         cv2.waitKey(20)
