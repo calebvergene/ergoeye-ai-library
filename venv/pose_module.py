@@ -66,7 +66,6 @@ class poseDetector():
         angle = math.degrees(math.atan2(y3-y2, x3-x2,) - math.atan2(y1-y2, x1-x2))
         if angle < 0:
             angle += 360
-        print(angle)
 
         ## Makes points green and displays live angle
         if draw:
@@ -74,3 +73,5 @@ class poseDetector():
             cv2.circle(img, (x2,y2), 5, (0,255,0), cv2.FILLED)
             cv2.circle(img, (x3,y3), 5, (0,255,0), cv2.FILLED)
             cv2.putText(img, str(int(angle)), (x2 - 20, y2+50), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 255), 2)
+        
+        return angle
