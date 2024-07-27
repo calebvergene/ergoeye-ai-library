@@ -22,7 +22,7 @@ def main():
         
         img = detector.find_pose(img)
         landmark_list = detector.find_position(img)
-        
+        detector.find_angle(img, 12, 24, 26)
     
         cv2.imshow("Image", img)
         cv2.waitKey(20)
