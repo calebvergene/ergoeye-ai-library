@@ -10,7 +10,7 @@ def main():
 
     ## Processes image frames
     ## while True:
-    img = cv2.imread('PoseVideos/13.png')
+    img = cv2.imread('PoseVideos/example.png')
     """success, img = cap.read()
 
     # Break the loop if the video ends

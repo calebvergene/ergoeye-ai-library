@@ -17,6 +17,7 @@ class poseDetector():
         self.smooth_segmentation=True
         self.min_detection_confidence=0.5
         self.min_tracking_confidence=0.5
+        self.num_poses=4
 
         # Initialize drawing and pose utilities from MediaPipe
         self.mpDraw = mp.solutions.drawing_utils
