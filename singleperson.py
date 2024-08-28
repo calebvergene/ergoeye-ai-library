@@ -3,14 +3,16 @@ import mediapipe as mp
 from pose_module import poseDetector
 from RULA_calc import calcRulaPose
 
-def main():
+def singleperson():
     # Creates video object
     # cap = cv2.VideoCapture('PoseVideos/1.mp4')
     detector = poseDetector()
 
     ## Processes image frames
     ## while True:
-    img = cv2.imread('PoseVideos/example.png')
+    img = cv2.imread('PoseVideos/12.png')
+
+
     """success, img = cap.read()
 
     # Break the loop if the video ends
@@ -21,6 +23,8 @@ def main():
     if img is None:
         print("Warning: Captured frame is None.")
         continue"""
+    
+
     
     img = detector.find_pose(img)
     landmark_list = detector.find_position(img)
@@ -33,4 +37,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    singleperson()
