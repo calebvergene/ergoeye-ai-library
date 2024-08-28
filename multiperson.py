@@ -13,12 +13,29 @@ def multiperson():
     # Initialize the poseDetector
     pose_detector = poseDetector()
 
-    # Function to blur the detected face
-    def blur_face(image, bbox):
-        x_min, y_min, x_max, y_max = bbox
-        roi = image[y_min:y_max, x_min:x_max]
-        blurred_roi = cv2.GaussianBlur(roi, (99, 99), 30)
-        image[y_min:y_max, x_min:x_max] = blurred_roi
+    def blur_face(image):
+        """
+        Function to blur the detected face
+        """
+
+        # Detect faces in the entire image
+        results_faces = mp_face_detection.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        
+        if results_faces.detections:
+            for detection in results_faces.detections:
+                # Get bounding box for the face
+                bboxC = detection.location_data.relative_bounding_box
+                image_height, image_width, _ = image.shape
+                x_min = int(bboxC.xmin * image_width)
+                y_min = int(bboxC.ymin * image_height)
+                x_max = x_min + int(bboxC.width * image_width)
+                y_max = y_min + int(bboxC.height * image_height)
+                
+                # Extract the region of interest (ROI) and apply Gaussian blur
+                roi = image[y_min:y_max, x_min:x_max]
+                blurred_roi = cv2.GaussianBlur(roi, (99, 99), 30)
+                image[y_min:y_max, x_min:x_max] = blurred_roi
+
         return image
 
     # File list
@@ -45,18 +62,8 @@ def multiperson():
                 # Perform pose estimation on the ROI
                 roi_with_pose = pose_detector.find_pose(roi)
 
-                # Detect faces within the ROI
-                results_faces = mp_face_detection.process(cv2.cvtColor(roi_with_pose, cv2.COLOR_BGR2RGB))
-                if results_faces.detections:
-                    for detection in results_faces.detections:
-                        bboxC = detection.location_data.relative_bounding_box
-                        x_fmin = int(bboxC.xmin * box_width) + int(x_min)
-                        y_fmin = int(bboxC.ymin * box_height) + int(y_min)
-                        x_fmax = x_fmin + int(bboxC.width * box_width)
-                        y_fmax = y_fmin + int(bboxC.height * box_height)
-
-                        # Blur the face in the image
-                        image = blur_face(image, (x_fmin, y_fmin, x_fmax, y_fmax))
+                blur_face(roi_with_pose)
+                
     return image
 
 image = multiperson()
