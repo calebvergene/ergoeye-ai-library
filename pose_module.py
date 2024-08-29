@@ -74,5 +74,32 @@ class poseDetector():
             cv2.circle(img, (x2,y2), 5, (0,255,0), cv2.FILLED)
             cv2.circle(img, (x3,y3), 5, (0,255,0), cv2.FILLED)
             cv2.putText(img, str(int(angle)), (x2 - 20, y2+50), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 255), 2)
-        
+
         return angle
+    
+    def blur_face(self, img):
+        """
+        Function to blur the detected face
+        """
+
+        # Detect faces in the entire image
+        mp_face_detection = mp.solutions.face_detection.FaceDetection(min_detection_confidence=0.5)
+        results_faces = mp_face_detection.process(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        
+        if results_faces.detections:
+            for detection in results_faces.detections:
+                # Get bounding box for the face
+                bboxC = detection.location_data.relative_bounding_box
+                image_height, image_width, _ = img.shape
+                x_min = int(bboxC.xmin * image_width)
+                y_min = int(bboxC.ymin * image_height)
+                x_max = x_min + int(bboxC.width * image_width)
+                y_max = y_min + int(bboxC.height * image_height)
+                
+                # Extract the region of interest (ROI) and apply Gaussian blur
+                roi = img[y_min:y_max, x_min:x_max]
+                blurred_roi = cv2.GaussianBlur(roi, (99, 99), 30)
+                img[y_min:y_max, x_min:x_max] = blurred_roi
+
+        return img
+        

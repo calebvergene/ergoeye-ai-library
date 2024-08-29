@@ -1,16 +1,16 @@
 import cv2
 import mediapipe as mp
 from pose_module import poseDetector
-from RULA_calc import calcRulaPose
+from REBA_calc import calcREBAPose
 
 def singleperson():
     # Creates video object
     # cap = cv2.VideoCapture('PoseVideos/1.mp4')
-    detector = poseDetector()
+    pose_detector = poseDetector()
 
     ## Processes image frames
     ## while True:
-    img = cv2.imread('PoseVideos/12.png')
+    img = cv2.imread('PoseVideos/14.png')
 
 
     """success, img = cap.read()
@@ -26,11 +26,11 @@ def singleperson():
     
 
     
-    img = detector.find_pose(img)
-    landmark_list = detector.find_position(img)
+    img = pose_detector.find_pose(img)
+    landmark_list = pose_detector.find_position(img)
     
-    rula = calcRulaPose(img, landmark_list)
-    rula.calc_upper_arm(detector.find_angle(img, 13, 11, 23))
+    reba = calcREBAPose(img, landmark_list)
+    #reba.calc_upper_arm(pose_detector.find_angle(img, 13, 11, 23))
 
     cv2.imshow("Image", img)
     cv2.waitKey(5000)
