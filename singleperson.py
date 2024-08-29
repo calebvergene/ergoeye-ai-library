@@ -1,16 +1,19 @@
 import cv2
 import mediapipe as mp
 from pose_module import poseDetector
-from REBA_calc import calcREBAPose
+from REBA_calc import execute_REBA_test
 
 def singleperson():
+    """
+    Function for executing ergonomic assesments with multiple people in it
+    """
     # Creates video object
     # cap = cv2.VideoCapture('PoseVideos/1.mp4')
     pose_detector = poseDetector()
 
     ## Processes image frames
     ## while True:
-    img = cv2.imread('PoseVideos/14.png')
+    raw_img = cv2.imread('PoseVideos/14.png')
 
 
     """success, img = cap.read()
@@ -26,12 +29,12 @@ def singleperson():
     
 
     
-    img = pose_detector.find_pose(img)
-    landmark_list = pose_detector.find_position(img)
-    
-    reba = calcREBAPose(img, landmark_list)
-    #reba.calc_upper_arm(pose_detector.find_angle(img, 13, 11, 23))
-    print(pose_detector.find_direction([13, 11, 23], [14, 12, 24]))
+    img = pose_detector.find_pose(raw_img)
+    execute_REBA_test(pose_detector, img)
+
+    print(pose_detector.find_direction([7], [8]))
+
+
     cv2.imshow("Image", img)
     cv2.waitKey(5000)
 

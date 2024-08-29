@@ -40,7 +40,9 @@ class poseDetector():
 
     def find_position(self, img, draw=True):
         """
-        calculates coordinates of each joint in the given image frame
+        Calculates coordinates of each joint in the given image frame
+
+        Returns: list of landmarks
         """
         self.landmark_list = []
 
@@ -58,11 +60,15 @@ class poseDetector():
         """
         Finds direction that person is facing based off landmark confidence scores
 
+        Returns: "left" or "right"
+
         POSSIBLE EDGE CASE: If joint is covered for some reason, could return wrong direction. 
+        Can make it to where if we arent FOR SURE what direction they are facing, we can skip the frame. 
         """
         left_score = 0
         right_score = 0
-
+        
+        #add up confidence scores from each side of the body
         for idx in left:
             left_score += self.results.pose_landmarks.landmark[idx].visibility
         for idx in right:

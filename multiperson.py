@@ -1,9 +1,12 @@
 import cv2
 import torch
 from pose_module import poseDetector
-from REBA_calc import calcREBAPose
+from REBA_calc import execute_REBA_test
 
 def multiperson():
+    """
+    Function for executing ergonomic assesments with multiple people in it
+    """
     # Initialize YOLOv5
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
@@ -32,12 +35,9 @@ def multiperson():
                 roi = image[int(y_min):int(y_max), int(x_min):int(x_max)]
 
                 # Perform pose estimation on the ROI
-                roi_with_pose = pose_detector.find_pose(roi)
+                img = pose_detector.find_pose(roi)
                 # pose_detector.blur_face(roi_with_pose)
-                landmark_list = pose_detector.find_position(roi_with_pose)
-                reba = calcREBAPose(roi_with_pose, landmark_list)
-                
-                #reba.calc_upper_arm(pose_detector.find_angle(roi_with_pose, 13, 11, 23))
+                execute_REBA_test(pose_detector, img)
 
 
                 
