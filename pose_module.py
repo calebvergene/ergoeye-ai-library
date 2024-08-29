@@ -54,6 +54,26 @@ class poseDetector():
 
         return self.landmark_list
 
+    def find_direction(self, left, right):
+        """
+        Finds direction that person is facing based off landmark confidence scores
+
+        POSSIBLE EDGE CASE: If joint is covered for some reason, could return wrong direction. 
+        """
+        left_score = 0
+        right_score = 0
+
+        for idx in left:
+            left_score += self.results.pose_landmarks.landmark[idx].visibility
+        for idx in right:
+            right_score += self.results.pose_landmarks.landmark[idx].visibility
+
+        if left_score > right_score:
+            return "left"
+        else:
+            return "right"
+
+
     def find_angle(self, img, p1, p2, p3, draw=True):
         """
         calculates the angle between three joints in a frame

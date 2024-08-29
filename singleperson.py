@@ -31,7 +31,7 @@ def singleperson():
     
     reba = calcREBAPose(img, landmark_list)
     #reba.calc_upper_arm(pose_detector.find_angle(img, 13, 11, 23))
-
+    print(pose_detector.find_direction([13, 11, 23], [14, 12, 24]))
     cv2.imshow("Image", img)
     cv2.waitKey(5000)
 
