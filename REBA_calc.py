@@ -54,6 +54,6 @@ def calc_upper_arm(angle):
 
 def execute_REBA_test(pose_detector, img):
     landmark_list = pose_detector.find_position(img)
-    neck_direction = pose_detector.find_direction([7], [8]) #based off ear
+    neck_direction = pose_detector.find_direction(landmark_list) #based off ear
     neck_result = calc_neck(neck_direction, landmark_list[0], [landmark_list[11], landmark_list[12]], [landmark_list[23], landmark_list[24]], img, pose_detector)
     print(neck_result)

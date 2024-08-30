@@ -59,7 +59,7 @@ class poseDetector():
 
         return self.landmark_list
 
-    def find_direction(self, left, right):
+    def find_direction(self, landmarks):
         """
         Finds direction that person is facing based off landmark confidence scores
 
@@ -72,12 +72,14 @@ class poseDetector():
         right_score = 0
         
         #add up confidence scores from each side of the body
-        for idx in left:
-            left_score += self.results.pose_landmarks.landmark[idx].visibility
-            print(f'{self.landmark_dict[idx]}: {self.results.pose_landmarks.landmark[idx].visibility} ')
-        for idx in right:
-            right_score += self.results.pose_landmarks.landmark[idx].visibility
-            print(f'{self.landmark_dict[idx]}: {self.results.pose_landmarks.landmark[idx].visibility} ')
+        for landmark in landmarks:
+            if landmark['id'] in [2,7,9,11,13,23,25]:
+                left_score += self.results.pose_landmarks.landmark[landmark['id']].visibility
+                print(f'{self.landmark_dict[landmark['id']]}: {self.results.pose_landmarks.landmark[landmark['id']].visibility} ')
+            if landmark['id'] in [5,8,10,12,14,24,26]:
+                right_score += self.results.pose_landmarks.landmark[landmark['id']].visibility
+                print(f'{self.landmark_dict[landmark['id']]}: {self.results.pose_landmarks.landmark[landmark['id']].visibility} ')
+            
 
         if left_score > right_score:
             print('facing left')
