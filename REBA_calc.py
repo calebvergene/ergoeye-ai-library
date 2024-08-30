@@ -9,32 +9,45 @@ import cv2
 - then, calculate the final score and display the score for each frame
 """
 
-def calc_neck(direction, nose, shoulder, hip, img, pose_detector):
+def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
+    """
+    Finds angle between middle shoulder, middle ear, and nose (-90 degrees for neck angle)
+
+    Returns a score based off of the REBA neck test 
+
+    NEED TO ADD: Neck bending and neck twist
+    NEED TESTING
+    """
 
     left_shoulder = shoulder[0]
     right_shoulder = shoulder[1]
 
-
+    # Calculate middle points of shoulder and ear
     shoulder_midpoint_x = (left_shoulder['x'] + right_shoulder['x']) / 2
     shoulder_midpoint_y = (left_shoulder['y'] + right_shoulder['y']) / 2
     shoulder_midpoint_dict = {'x': shoulder_midpoint_x, 'y':shoulder_midpoint_y}
-    cv2.circle(img, (int(shoulder_midpoint_x),int(shoulder_midpoint_y)), 5, (0,255,0), cv2.FILLED)
-    hip_midpoint_x = (hip[0]['x'] + hip[1]['x']) / 2
-    hip_midpoint_y = (hip[0]['y'] + hip[1]['y']) / 2
-    hip_midpoint_dict = {'x': hip_midpoint_x, 'y':hip_midpoint_y}
-    cv2.circle(img, (int(hip_midpoint_x),int(hip_midpoint_y)), 5, (0,255,0), cv2.FILLED)
-    # Calculate the angle between the neck line and the vertical axis
+    ### cv2.circle(img, (int(shoulder_midpoint_x),int(shoulder_midpoint_y)), 5, (0,255,0), cv2.FILLED)
+    ear_midpoint_x = (ear[0]['x'] + ear[1]['x']) / 2
+    ear_midpoint_y = (ear[0]['y'] + ear[1]['y']) / 2
+    ear_midpoint_dict = {'x': ear_midpoint_x, 'y':ear_midpoint_y}
+    ### cv2.circle(img, (int(ear_midpoint_x),int(ear_midpoint_y)), 5, (0,255,0), cv2.FILLED)
 
-    neck_angle = pose_detector.find_angle(img, hip_midpoint_dict, shoulder_midpoint_dict, nose) - 180
+    # Modify angle to be accurate.
+    neck_angle = pose_detector.find_angle(img, shoulder_midpoint_dict, ear_midpoint_dict, nose) 
     if direction == 'right':
-        neck_angle -=30
+        neck_angle -=270
     else:
-        neck_angle +=30
-    
-
+        neck_angle -=90
+        neck_angle = neck_angle * -1
     print(f'neck angle: {neck_angle}')
 
-
+    # Calculate REBA score
+    if neck_angle >= 15:
+        return 2
+    elif neck_angle <= 5:
+        return 2
+    else: 
+        return 1
 
 
 def calc_upper_arm(angle):
@@ -55,5 +68,5 @@ def calc_upper_arm(angle):
 def execute_REBA_test(pose_detector, img):
     landmark_list = pose_detector.find_position(img)
     neck_direction = pose_detector.find_direction(landmark_list) #based off ear
-    neck_result = calc_neck(neck_direction, landmark_list[0], [landmark_list[11], landmark_list[12]], [landmark_list[23], landmark_list[24]], img, pose_detector)
+    neck_result = calc_neck(neck_direction, landmark_list[0], [landmark_list[11], landmark_list[12]], [landmark_list[7], landmark_list[8]], img, pose_detector)
     print(neck_result)

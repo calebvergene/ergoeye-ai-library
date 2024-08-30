@@ -71,14 +71,14 @@ class poseDetector():
         left_score = 0
         right_score = 0
         
-        #add up confidence scores from each side of the body
+        # Adds up confidence scores from each side of the body
         for landmark in landmarks:
             if landmark['id'] in [2,7,9,11,13,23,25]:
                 left_score += self.results.pose_landmarks.landmark[landmark['id']].visibility
-                print(f'{self.landmark_dict[landmark['id']]}: {self.results.pose_landmarks.landmark[landmark['id']].visibility} ')
+                ### print(f'{self.landmark_dict[landmark['id']]}: {self.results.pose_landmarks.landmark[landmark['id']].visibility} ')
             if landmark['id'] in [5,8,10,12,14,24,26]:
                 right_score += self.results.pose_landmarks.landmark[landmark['id']].visibility
-                print(f'{self.landmark_dict[landmark['id']]}: {self.results.pose_landmarks.landmark[landmark['id']].visibility} ')
+                ### print(f'{self.landmark_dict[landmark['id']]}: {self.results.pose_landmarks.landmark[landmark['id']].visibility} ')
             
 
         if left_score > right_score:
