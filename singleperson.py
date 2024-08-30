@@ -13,7 +13,7 @@ def singleperson():
 
     ## Processes image frames
     ## while True:
-    raw_img = cv2.imread('PoseVideos/14.png')
+    raw_img = cv2.imread('PoseVideos/11.png')
 
 
     """success, img = cap.read()
@@ -31,9 +31,6 @@ def singleperson():
     
     img = pose_detector.find_pose(raw_img)
     execute_REBA_test(pose_detector, img)
-
-    print(pose_detector.find_direction([7], [8]))
-
 
     cv2.imshow("Image", img)
     cv2.waitKey(5000)

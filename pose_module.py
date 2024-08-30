@@ -3,6 +3,8 @@ import mediapipe as mp
 import math
 
 
+
+
 class poseDetector():
     """
     creates instance of video
@@ -23,6 +25,7 @@ class poseDetector():
         self.mpDraw = mp.solutions.drawing_utils
         self.mpPose = mp.solutions.pose
         self.pose = self.mpPose.Pose(self.static_image_mode, self.model_complexity, self.smooth_landmarks, self.enable_segmentation, self.smooth_segmentation, self.min_detection_confidence, self.min_tracking_confidence)
+        self.landmark_dict = {0: "nose", 1: "left eye (inner)", 2: "left eye", 3: "left eye (outer)", 4: "right eye (inner)", 5: "right eye", 6: "right eye (outer)", 7: "left ear", 8: "right ear", 9: "mouth (left)", 10: "mouth (right)", 11: "left shoulder", 12: "right shoulder", 13: "left elbow", 14: "right elbow", 15: "left wrist", 16: "right wrist", 17: "left pinky", 18: "right pinky", 19: "left index", 20: "right index", 21: "left thumb", 22: "right thumb", 23: "left hip", 24: "right hip", 25: "left knee", 26: "right knee", 27: "left ankle", 28: "right ankle", 29: "left heel", 30: "right heel", 31: "left foot index", 32: "right foot index"}
 
     
     def find_pose(self, img, draw=True):
@@ -71,12 +74,16 @@ class poseDetector():
         #add up confidence scores from each side of the body
         for idx in left:
             left_score += self.results.pose_landmarks.landmark[idx].visibility
+            print(f'{self.landmark_dict[idx]}: {self.results.pose_landmarks.landmark[idx].visibility} ')
         for idx in right:
             right_score += self.results.pose_landmarks.landmark[idx].visibility
+            print(f'{self.landmark_dict[idx]}: {self.results.pose_landmarks.landmark[idx].visibility} ')
 
         if left_score > right_score:
+            print('facing left')
             return "left"
         else:
+            print('facing right')
             return "right"
 
 
@@ -85,22 +92,22 @@ class poseDetector():
         calculates the angle between three joints in a frame
         """
         ## Get positions of the three joints
-        x1, y1 = list(self.landmark_list[p1].values())[-2:]
-        x2, y2 = list(self.landmark_list[p2].values())[-2:]
-        x3, y3 = list(self.landmark_list[p3].values())[-2:]
+        x1, y1 = list(p1.values())[-2:]
+        x2, y2 = list(p2.values())[-2:]
+        x3, y3 = list(p3.values())[-2:]
 
         ## Calculate angle
         angle = math.degrees(math.atan2(y3-y2, x3-x2,) - math.atan2(y1-y2, x1-x2))
         if angle < 0:
             angle += 360
 
-        ## Makes points green and displays live angle
+        """## Makes points green and displays live angle
         if draw:
             cv2.circle(img, (x1,y1), 5, (0,255,0), cv2.FILLED)
             cv2.circle(img, (x2,y2), 5, (0,255,0), cv2.FILLED)
             cv2.circle(img, (x3,y3), 5, (0,255,0), cv2.FILLED)
             cv2.putText(img, str(int(angle)), (x2 - 20, y2+50), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 255), 2)
-
+"""
         return angle
     
     def blur_face(self, img):
