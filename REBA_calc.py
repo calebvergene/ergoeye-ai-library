@@ -37,14 +37,62 @@ def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
     if direction == 'right':
         neck_angle -=270
     else:
+        # To accomodate for the person facing the opposite direction
         neck_angle -=90
         neck_angle = neck_angle * -1
     print(f'neck angle: {neck_angle}')
 
     # Calculate REBA score
-    if neck_angle >= 15:
+    if neck_angle >= 20:
         return 2
-    elif neck_angle <= 5:
+    elif neck_angle <= 0:
+        return 2
+    else: 
+        return 1
+    
+
+def calc_trunk(direction, shoulder, hip, img, pose_detector):
+    """
+    Finds angle between middle should, middle hip, and below middle hip (-180 degrees for accurate trunk tilt)
+
+    Returns a score based off of the REBA trunk test 
+
+    NEED TO ADD: Neck side bending and neck twist
+    NEED TESTING
+    FOR THIS TO BE ACCURATE: Camera needs to be centered so that gravity is going directly down. 3rd point is directly below hip
+    """
+
+    left_shoulder = shoulder[0]
+    right_shoulder = shoulder[1]
+
+    # Calculate middle points of shoulder and hip
+    shoulder_midpoint_x = (left_shoulder['x'] + right_shoulder['x']) / 2
+    shoulder_midpoint_y = (left_shoulder['y'] + right_shoulder['y']) / 2
+    shoulder_midpoint_dict = {'x': shoulder_midpoint_x, 'y':shoulder_midpoint_y}
+    cv2.circle(img, (int(shoulder_midpoint_x),int(shoulder_midpoint_y)), 5, (0,255,0), cv2.FILLED)
+    hip_midpoint_x = (hip[0]['x'] + hip[1]['x']) / 2
+    hip_midpoint_y = (hip[0]['y'] + hip[1]['y']) / 2
+    hip_midpoint_dict = {'x': hip_midpoint_x, 'y':hip_midpoint_y}
+    cv2.circle(img, (int(hip_midpoint_x),int(hip_midpoint_y)), 5, (0,255,0), cv2.FILLED)
+    beneath_hip_point_dict = {'x': hip_midpoint_x, 'y': hip_midpoint_y + 50}  # 50 pixels beneath
+    cv2.circle(img, (int(beneath_hip_point_dict['x']), int(beneath_hip_point_dict['y'])), 5, (0, 255, 0), cv2.FILLED)
+
+    # Modify angle to be accurate.
+    trunk_angle = pose_detector.find_angle(img, beneath_hip_point_dict, hip_midpoint_dict, shoulder_midpoint_dict) - 180
+    if direction == 'left':
+        trunk_angle = trunk_angle * -1
+    print(f'trunk angle: {trunk_angle}')
+
+    # Calculate REBA score
+    if trunk_angle >= 60:
+        return 4
+    elif trunk_angle <= -20:
+        return 3
+    elif trunk_angle >= 20:
+        return 3
+    elif trunk_angle >= 0:
+        return 2
+    elif trunk_angle <= 0:
         return 2
     else: 
         return 1
@@ -67,6 +115,10 @@ def calc_upper_arm(angle):
 
 def execute_REBA_test(pose_detector, img):
     landmark_list = pose_detector.find_position(img)
-    neck_direction = pose_detector.find_direction(landmark_list) #based off ear
-    neck_result = calc_neck(neck_direction, landmark_list[0], [landmark_list[11], landmark_list[12]], [landmark_list[7], landmark_list[8]], img, pose_detector)
-    print(neck_result)
+    direction = pose_detector.find_direction(landmark_list) #based off ear
+
+    neck_result = calc_neck(direction, landmark_list[0], [landmark_list[11], landmark_list[12]], [landmark_list[7], landmark_list[8]], img, pose_detector)
+    print(f'neck score: {neck_result}')
+
+    trunk_result = calc_trunk(direction, [landmark_list[11], landmark_list[12]], [landmark_list[23], landmark_list[24]], img, pose_detector)
+    print(f'trunk score: {trunk_result}')
