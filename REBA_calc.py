@@ -69,13 +69,13 @@ def calc_trunk(direction, shoulder, hip, img, pose_detector):
     shoulder_midpoint_x = (left_shoulder['x'] + right_shoulder['x']) / 2
     shoulder_midpoint_y = (left_shoulder['y'] + right_shoulder['y']) / 2
     shoulder_midpoint_dict = {'x': shoulder_midpoint_x, 'y':shoulder_midpoint_y}
-    cv2.circle(img, (int(shoulder_midpoint_x),int(shoulder_midpoint_y)), 5, (0,255,0), cv2.FILLED)
+    ### cv2.circle(img, (int(shoulder_midpoint_x),int(shoulder_midpoint_y)), 5, (0,255,0), cv2.FILLED)
     hip_midpoint_x = (hip[0]['x'] + hip[1]['x']) / 2
     hip_midpoint_y = (hip[0]['y'] + hip[1]['y']) / 2
     hip_midpoint_dict = {'x': hip_midpoint_x, 'y':hip_midpoint_y}
-    cv2.circle(img, (int(hip_midpoint_x),int(hip_midpoint_y)), 5, (0,255,0), cv2.FILLED)
+    ### cv2.circle(img, (int(hip_midpoint_x),int(hip_midpoint_y)), 5, (0,255,0), cv2.FILLED)
     beneath_hip_point_dict = {'x': hip_midpoint_x, 'y': hip_midpoint_y + 50}  # 50 pixels beneath
-    cv2.circle(img, (int(beneath_hip_point_dict['x']), int(beneath_hip_point_dict['y'])), 5, (0, 255, 0), cv2.FILLED)
+    ### cv2.circle(img, (int(beneath_hip_point_dict['x']), int(beneath_hip_point_dict['y'])), 5, (0, 255, 0), cv2.FILLED)
 
     # Modify angle to be accurate.
     trunk_angle = pose_detector.find_angle(img, beneath_hip_point_dict, hip_midpoint_dict, shoulder_midpoint_dict) - 180
@@ -93,6 +93,52 @@ def calc_trunk(direction, shoulder, hip, img, pose_detector):
     elif trunk_angle >= 0:
         return 2
     elif trunk_angle <= 0:
+        return 2
+    else: 
+        return 1
+    
+
+def calc_legs(direction, hip, knee, ankle, img, pose_detector):
+    """
+    Finds angle between hip, knee, and ankle
+
+    Returns a score based off of the REBA trunk test 
+
+    NEED TO ADD:
+    NEED TESTING
+    """
+
+    left_hip = hip[0]
+    right_hip = hip[1]
+
+    left_knee = knee[0]
+    right_knee = knee[1]
+
+    left_ankle = ankle[0]
+    right_ankle = ankle[1]
+
+    # Modify angle to be accurate.
+    left_leg_angle = pose_detector.find_angle(img, left_hip, left_knee, left_ankle) - 180
+    right_leg_angle = pose_detector.find_angle(img, right_hip, right_knee, right_ankle) - 180
+
+      
+    if direction == 'left':
+        left_leg_angle = left_leg_angle * -1
+        right_leg_angle = right_leg_angle * -1
+    
+
+    print(f'left leg angle: {left_leg_angle}')
+    print(f'right leg angle: {right_leg_angle}')
+
+    if left_leg_angle > right_leg_angle:
+        leg_angle = right_leg_angle
+    else:
+        leg_angle = left_leg_angle
+
+    # Calculate REBA score
+    if leg_angle >= 60:
+        return 3
+    elif leg_angle >= 30:
         return 2
     else: 
         return 1
@@ -122,3 +168,6 @@ def execute_REBA_test(pose_detector, img):
 
     trunk_result = calc_trunk(direction, [landmark_list[11], landmark_list[12]], [landmark_list[23], landmark_list[24]], img, pose_detector)
     print(f'trunk score: {trunk_result}')
+
+    leg_result = calc_legs(direction, [landmark_list[23], landmark_list[24]], [landmark_list[25], landmark_list[26]], [landmark_list[27], landmark_list[28]], img, pose_detector)
+    print(f'leg score: {leg_result}')

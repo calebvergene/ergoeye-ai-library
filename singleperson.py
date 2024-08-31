@@ -13,7 +13,7 @@ def singleperson():
 
     ## Processes image frames
     ## while True:
-    raw_img = cv2.imread('PoseVideos/11.png')
+    raw_img = cv2.imread('PoseVideos/looking-up.png')
 
 
     """success, img = cap.read()
