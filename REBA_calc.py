@@ -104,7 +104,7 @@ def calc_legs(direction, hip, knee, ankle, img, pose_detector):
 
     Returns a score based off of the REBA trunk test 
 
-    NEED TO ADD:
+    NEED TO ADD: if leg is lifted???
     NEED TESTING
     """
 
@@ -144,19 +144,94 @@ def calc_legs(direction, hip, knee, ankle, img, pose_detector):
         return 1
 
 
-def calc_upper_arm(angle):
-    score = 0
-    if angle <= 20 or angle >= 340:
-        score = 1
-    elif angle >= 260:
-        score = 2
-    elif angle > 20 and angle <= 45:
-        score = 2
-    elif angle > 45 and angle <= 90:
-        score = 3
-    else: score = 4
-    print('Upper Arm Angle:', angle)
-    print('Upper Arm Score:', score)
+def first_REBA_score(neck_score, trunk_score, leg_score):
+    # Define the posture score table for each neck score
+    posture_score_table = {
+        1: [
+            [1, 2, 3, 4],
+            [2, 3, 4, 5],
+            [2, 4, 5, 6],
+            [3, 5, 6, 7],
+            [4, 6, 7, 8]
+        ],
+        2: [
+            [1, 2, 3, 4],
+            [2, 3, 4, 5],
+            [3, 4, 5, 6],
+            [4, 5, 6, 7],
+            [5, 6, 7, 8]
+        ],
+        3: [
+            [3, 4, 5, 6],
+            [3, 4, 5, 6],
+            [4, 5, 6, 7],
+            [5, 6, 7, 8],
+            [6, 7, 8, 9]
+        ]
+    }
+    
+    # Subtract 1 from the scores to match the table indices (0-indexed in Python)
+    trunk_index = trunk_score - 1
+    leg_index = leg_score - 1
+    
+    posture_score = posture_score_table[neck_score][trunk_index][leg_index]
+    
+    return posture_score
+
+
+def calc_upper_arm(direction, hip, shoulder, elbow, img, pose_detector):
+    """
+    Finds angle between hip, shoulder, and elbow to find upper arm angle
+
+    Returns a score based off of the REBA upper arm test 
+
+    NEED TO ADD: if shoulder raised, upper arm abducted, arm supported/person leaning
+    NEED TESTING
+    """
+
+    left_hip = hip[0]
+    right_hip = hip[1]
+    left_shoulder = shoulder[0]
+    right_shoulder = shoulder[1]
+    left_elbow = elbow[0]
+    right_elbow = elbow[1]
+
+    # Find angle
+    left_upper_arm_angle = pose_detector.find_angle(img, left_hip, left_shoulder, left_elbow)
+    right_upper_arm_angle = pose_detector.find_angle(img, right_hip, right_shoulder, right_elbow)
+    
+    # Modify angle to be accurate
+    # Because humanly impossible to have your arms behind your head at at 150 degree angle, 
+    # this calculation flips the angle to adjust to the correct calculation
+    if direction == 'right':
+        if left_upper_arm_angle >= 150:
+            left_upper_arm_angle = left_upper_arm_angle - 360 
+        if right_upper_arm_angle >= 150:
+            right_upper_arm_angle = right_upper_arm_angle - 360
+        left_upper_arm_angle = left_upper_arm_angle * -1
+        right_upper_arm_angle = right_upper_arm_angle * -1
+    elif direction == 'left':
+        if left_upper_arm_angle >= 210:
+            left_upper_arm_angle = left_upper_arm_angle - 360 
+        if right_upper_arm_angle >= 210:
+            right_upper_arm_angle = right_upper_arm_angle - 360
+
+
+    print(f'left upper arm angle: {left_upper_arm_angle}')
+    print(f'right upper arm angle: {right_upper_arm_angle}')
+
+    if left_upper_arm_angle > right_upper_arm_angle:
+        upper_arm_angle = right_upper_arm_angle
+    else:
+        upper_arm_angle = left_upper_arm_angle
+
+    # Calculate REBA score
+    if upper_arm_angle >= 60:
+        return 3
+    elif upper_arm_angle >= 30:
+        return 2
+    else: 
+        return 1
 
 
 def execute_REBA_test(pose_detector, img):
@@ -171,3 +246,10 @@ def execute_REBA_test(pose_detector, img):
 
     leg_result = calc_legs(direction, [landmark_list[23], landmark_list[24]], [landmark_list[25], landmark_list[26]], [landmark_list[27], landmark_list[28]], img, pose_detector)
     print(f'leg score: {leg_result}')
+
+    reba_score_1 = first_REBA_score(neck_result, trunk_result, leg_result)
+    
+    # Need to implement step 5; weight of object
+
+    upper_arm_result = calc_upper_arm(direction, [landmark_list[23], landmark_list[24]], [landmark_list[11], landmark_list[12]], [landmark_list[13], landmark_list[14]], img, pose_detector)
+    print(f'upper arm score: {upper_arm_result}')
