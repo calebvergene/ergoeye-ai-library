@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 
 """
@@ -410,3 +411,8 @@ def execute_REBA_test(pose_detector, img):
     final_score = final_REBA_score(reba_score_1, reba_score_2)
 
     print(final_score)
+
+    cv2.putText(img, f'REBA Score: {final_score}', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 
+                    2, (255, 255, 255), 2, cv2.LINE_AA)
+
+    
