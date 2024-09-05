@@ -321,7 +321,54 @@ def calc_wrist(direction, index, wrist, elbow, img, pose_detector):
         return 1
     
 
+def second_REBA_score(upper_arm_score, lower_arm_score, wrist_score):
+    """
+    Calculates the REBA arm score based on upper arm, wrist, and lower arm scores using Table B.
+    """
+    # Define the REBA Table B as a 2D array based on the image
+    reba_table_b = [
+        [1, 2, 2, 1, 2, 3],
+        [1, 2, 2, 2, 3, 4],
+        [3, 4, 5, 4, 5, 5],
+        [4, 5, 5, 5, 6, 7],
+        [6, 7, 8, 7, 8, 8],
+        [7, 8, 8, 8, 9, 9]
+    ]
 
+    upper_arm_idx = upper_arm_score - 1
+    wrist_idx = (wrist_score - 1) * 3
+    lower_arm_idx = lower_arm_score - 1
+    
+    # Calculate the column index by combining wrist and lower arm indices
+    column_idx = wrist_idx + lower_arm_idx
+
+    return reba_table_b[upper_arm_idx][column_idx]
+
+
+def final_REBA_score(score_a, score_b):
+    """
+    Calculates the final REBA score using Table C based on Score A and Score B.
+    """
+
+    reba_table_c = [
+        [1, 1, 1, 2, 3, 3, 4, 5, 6, 7, 7, 7],
+        [1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7, 8],
+        [2, 3, 3, 3, 5, 5, 6, 7, 7, 8, 8, 8],
+        [3, 4, 4, 4, 5, 6, 7, 8, 8, 9, 9, 9],
+        [4, 4, 4, 5, 6, 7, 8, 8, 9, 9, 9, 9],
+        [6, 6, 6, 6, 7, 8, 9, 9, 10, 10, 10, 10],
+        [7, 7, 7, 7, 8, 9, 9, 10, 10, 11, 11, 11],
+        [8, 8, 8, 8, 9, 10, 10, 10, 11, 11, 11, 11],
+        [9, 9, 9, 9, 10, 10, 10, 11, 11, 12, 12, 12],
+        [10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12],
+        [11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12],
+        [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+    ]
+
+    score_a_idx = score_a - 1
+    score_b_idx = score_b - 1
+
+    return reba_table_c[score_a_idx][score_b_idx]
 
 
 
@@ -350,3 +397,16 @@ def execute_REBA_test(pose_detector, img):
 
     wrist_result = calc_wrist(direction, [landmark_list[19], landmark_list[20]], [landmark_list[15], landmark_list[16]], [landmark_list[13], landmark_list[14]], img, pose_detector)
     print(f'wrist score: {wrist_result}')
+
+    # +1 is temporary because no coupling test, but can assume that most things don't have perfect handle / non existent handle
+    reba_score_2 = second_REBA_score(upper_arm_result, lower_arm_result, wrist_result) + 1 
+
+    # Need to create coupling score (handles)
+    
+    print()
+    print(f'Score 1: {reba_score_1}')
+    print(f'Score 2: {reba_score_2}')
+
+    final_score = final_REBA_score(reba_score_1, reba_score_2)
+
+    print(final_score)
