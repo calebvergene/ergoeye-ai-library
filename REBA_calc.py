@@ -287,7 +287,7 @@ def calc_wrist(direction, index, wrist, elbow, img, pose_detector):
     Returns a score based off of the REBA lower arm test 
 
     NEED TO ADD: wrist twisted
-    NEED TESTING
+    NEED TESTING, kind of inaccurate because not tracked with knuckle, but index. 
     """
 
     left_wrist = wrist[0]
@@ -307,7 +307,7 @@ def calc_wrist(direction, index, wrist, elbow, img, pose_detector):
     print(f'left wrist angle: {left_wrist_angle}')
     print(f'right wrist angle: {right_wrist_angle}')
 
-    if abs(left_wrist_angle) > abs(right_wrist_angle):
+    if abs(left_wrist_angle) < abs(right_wrist_angle):
         wrist_angle = left_wrist_angle
     else:
         wrist_angle = right_wrist_angle
