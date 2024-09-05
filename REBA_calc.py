@@ -53,7 +53,7 @@ def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
 
 def calc_trunk(direction, shoulder, hip, img, pose_detector):
     """
-    Finds angle between middle should, middle hip, and below middle hip (-180 degrees for accurate trunk tilt)
+    Finds angle between middle shoulder, middle hip, and below middle hip (-180 degrees for accurate trunk tilt)
 
     Returns a score based off of the REBA trunk test 
 
@@ -226,12 +226,76 @@ def calc_upper_arm(direction, hip, shoulder, elbow, img, pose_detector):
         upper_arm_angle = left_upper_arm_angle
 
     # Calculate REBA score
-    if upper_arm_angle >= 60:
+    if upper_arm_angle >= 90:
+        return 4
+    elif upper_arm_angle >= 45:
         return 3
-    elif upper_arm_angle >= 30:
+    elif upper_arm_angle >= 20:
+        return 2
+    elif upper_arm_angle <= 20:
         return 2
     else: 
         return 1
+    
+
+def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
+    """
+    Finds angle between wrist, shoulder, and elbow to find upper arm angle
+
+    Returns a score based off of the REBA upper arm test 
+
+    NEED TO ADD: if shoulder raised, upper arm abducted, arm supported/person leaning
+    NEED TESTING
+    """
+
+    left_wrist = wrist[0]
+    right_wrist = wrist[1]
+    left_shoulder = shoulder[0]
+    right_shoulder = shoulder[1]
+    left_elbow = elbow[0]
+    right_elbow = elbow[1]
+
+    # Find angle
+    left_upper_arm_angle = pose_detector.find_angle(img, left_wrist, left_shoulder, left_elbow)
+    right_upper_arm_angle = pose_detector.find_angle(img, right_wrist, right_shoulder, right_elbow)
+    
+    # Modify angle to be accurate
+    # Because humanly impossible to have your arms behind your head at at 150 degree angle, 
+    # this calculation flips the angle to adjust to the correct calculation
+    if direction == 'right':
+        if left_upper_arm_angle >= 150:
+            left_upper_arm_angle = left_upper_arm_angle - 360 
+        if right_upper_arm_angle >= 150:
+            right_upper_arm_angle = right_upper_arm_angle - 360
+        left_upper_arm_angle = left_upper_arm_angle * -1
+        right_upper_arm_angle = right_upper_arm_angle * -1
+    elif direction == 'left':
+        if left_upper_arm_angle >= 210:
+            left_upper_arm_angle = left_upper_arm_angle - 360 
+        if right_upper_arm_angle >= 210:
+            right_upper_arm_angle = right_upper_arm_angle - 360
+
+
+    print(f'left upper arm angle: {left_upper_arm_angle}')
+    print(f'right upper arm angle: {right_upper_arm_angle}')
+
+    if left_upper_arm_angle > right_upper_arm_angle:
+        upper_arm_angle = right_upper_arm_angle
+    else:
+        upper_arm_angle = left_upper_arm_angle
+
+    # Calculate REBA score
+    if upper_arm_angle >= 90:
+        return 4
+    elif upper_arm_angle >= 45:
+        return 3
+    elif upper_arm_angle >= 20:
+        return 2
+    elif upper_arm_angle <= 20:
+        return 2
+    else: 
+        return 1
+
 
 
 def execute_REBA_test(pose_detector, img):
@@ -247,9 +311,9 @@ def execute_REBA_test(pose_detector, img):
     leg_result = calc_legs(direction, [landmark_list[23], landmark_list[24]], [landmark_list[25], landmark_list[26]], [landmark_list[27], landmark_list[28]], img, pose_detector)
     print(f'leg score: {leg_result}')
 
-    reba_score_1 = first_REBA_score(neck_result, trunk_result, leg_result)
-    
     # Need to implement step 5; weight of object
+
+    reba_score_1 = first_REBA_score(neck_result, trunk_result, leg_result)
 
     upper_arm_result = calc_upper_arm(direction, [landmark_list[23], landmark_list[24]], [landmark_list[11], landmark_list[12]], [landmark_list[13], landmark_list[14]], img, pose_detector)
     print(f'upper arm score: {upper_arm_result}')
