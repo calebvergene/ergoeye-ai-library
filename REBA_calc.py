@@ -238,9 +238,9 @@ def calc_upper_arm(direction, hip, shoulder, elbow, img, pose_detector):
         return 1
     
 
-def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
+def calc_upper_arm(direction, hip, shoulder, elbow, img, pose_detector):
     """
-    Finds angle between wrist, shoulder, and elbow to find upper arm angle
+    Finds angle between hip, shoulder, and elbow to find upper arm angle
 
     Returns a score based off of the REBA upper arm test 
 
@@ -248,16 +248,16 @@ def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
     NEED TESTING
     """
 
-    left_wrist = wrist[0]
-    right_wrist = wrist[1]
+    left_hip = hip[0]
+    right_hip = hip[1]
     left_shoulder = shoulder[0]
     right_shoulder = shoulder[1]
     left_elbow = elbow[0]
     right_elbow = elbow[1]
 
     # Find angle
-    left_upper_arm_angle = pose_detector.find_angle(img, left_wrist, left_shoulder, left_elbow)
-    right_upper_arm_angle = pose_detector.find_angle(img, right_wrist, right_shoulder, right_elbow)
+    left_upper_arm_angle = pose_detector.find_angle(img, left_hip, left_shoulder, left_elbow)
+    right_upper_arm_angle = pose_detector.find_angle(img, right_hip, right_shoulder, right_elbow)
     
     # Modify angle to be accurate
     # Because humanly impossible to have your arms behind your head at at 150 degree angle, 
@@ -295,6 +295,49 @@ def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
         return 2
     else: 
         return 1
+    
+
+def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
+    """
+    Finds angle between wrist, shoulder, and elbow to find lower arm angle
+
+    Returns a score based off of the REBA lower arm test 
+
+    NEED TESTING
+    """
+
+    left_wrist = wrist[0]
+    right_wrist = wrist[1]
+    left_shoulder = shoulder[0]
+    right_shoulder = shoulder[1]
+    left_elbow = elbow[0]
+    right_elbow = elbow[1]
+
+    # Find angle
+    left_lower_arm_angle = pose_detector.find_angle(img, left_shoulder, left_elbow, left_wrist)
+    right_lower_arm_angle = pose_detector.find_angle(img, right_shoulder, right_elbow, right_wrist)
+ 
+
+    if direction == 'left':
+        left_lower_arm_angle =  360 - left_lower_arm_angle
+        right_lower_arm_angle = 360 - right_lower_arm_angle
+
+
+    print(f'left lower arm angle: {left_lower_arm_angle}')
+    print(f'right lower arm angle: {right_lower_arm_angle}')
+
+    if left_lower_arm_angle > right_lower_arm_angle:
+        lower_arm_angle = right_lower_arm_angle
+    else:
+        lower_arm_angle = left_lower_arm_angle
+
+    # Calculate REBA score
+    if lower_arm_angle <= 80:
+        return 2
+    elif lower_arm_angle >= 120:
+        return 2
+    else: 
+        return 1
 
 
 
@@ -317,3 +360,6 @@ def execute_REBA_test(pose_detector, img):
 
     upper_arm_result = calc_upper_arm(direction, [landmark_list[23], landmark_list[24]], [landmark_list[11], landmark_list[12]], [landmark_list[13], landmark_list[14]], img, pose_detector)
     print(f'upper arm score: {upper_arm_result}')
+
+    lower_arm_result = calc_lower_arm(direction, [landmark_list[15], landmark_list[16]], [landmark_list[11], landmark_list[12]], [landmark_list[13], landmark_list[14]], img, pose_detector)
+    print(f'lower arm score: {lower_arm_result}')
