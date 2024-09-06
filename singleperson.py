@@ -16,18 +16,20 @@ def singleperson():
         #raw_img = cv2.imread('PoseVideos/13.png')
 
 
-        success, img = cap.read()
+        success, raw_img = cap.read()
 
         # Break the loop if the video ends
         if not success:
             print("Finished processing video.")
             break
 
-        if img is None:
+        if raw_img is None:
             print("Warning: Captured frame is None.")
             continue
     
-        img = pose_detector.find_pose(img)
+        img = pose_detector.find_pose(raw_img)
+        # img = pose_detector.blur_face(img)
+
         try:
             execute_REBA_test(pose_detector, img)
         except:
