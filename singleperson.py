@@ -28,11 +28,12 @@ def singleperson():
             continue
     
         img = pose_detector.find_pose(raw_img)
-        # img = pose_detector.blur_face(img)
+        #img = pose_detector.blur_face(img)
 
         try:
             execute_REBA_test(pose_detector, img)
-        except:
+        except Exception as e:
+            print('Error: ', e)
             continue
 
         cv2.imshow("Image", img)

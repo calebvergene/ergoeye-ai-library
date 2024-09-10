@@ -135,10 +135,8 @@ class poseDetector():
             
 
         if left_score > right_score:
-            print('facing left')
             return "left"
         else:
-            print('facing right')
             return "right"
 
 
@@ -190,4 +188,22 @@ class poseDetector():
                 img[y_min:y_max, x_min:x_max] = blurred_roi
 
         return img
+    
+
+    def change_line_color(self, img, color, p1, p2):
+        """
+        Changes line color between two landmarks on the body
+        """
         
+        if (self.results.pose_landmarks.landmark[p1['id']].visibility > 0.7 and 
+        self.results.pose_landmarks.landmark[p2['id']].visibility > 0.7):
+
+            # Ensure the coordinates are integers
+            p1_coords = (int(p1['x']), int(p1['y']))
+            p2_coords = (int(p2['x']), int(p2['y']))
+
+            # Draw the line with the specified color
+            if color == "yellow":
+                cv2.line(img, p1_coords, p2_coords, (42, 212, 227), 11)  # Yellow
+            elif color == "red":
+                cv2.line(img, p1_coords, p2_coords, (255, 61, 61), 11)  # Red
