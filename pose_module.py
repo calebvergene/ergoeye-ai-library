@@ -206,4 +206,4 @@ class poseDetector():
             if color == "yellow":
                 cv2.line(img, p1_coords, p2_coords, (42, 212, 227), 11)  # Yellow
             elif color == "red":
-                cv2.line(img, p1_coords, p2_coords, (255, 61, 61), 11)  # Red
+                cv2.line(img, p1_coords, p2_coords, (61, 61, 255), 11)  # Red

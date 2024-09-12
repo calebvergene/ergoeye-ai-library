@@ -216,6 +216,15 @@ def calc_upper_arm(direction, hip, shoulder, elbow, img, pose_detector):
         if right_upper_arm_angle >= 210:
             right_upper_arm_angle = right_upper_arm_angle - 360
 
+    # Color arm based off REBA score
+    def upper_arm_color(img, angle, p1, p2):
+        if angle >= 90:
+            pose_detector.change_line_color(img, 'red', p1, p2)
+        elif angle >= 40 or angle <= -40:
+            pose_detector.change_line_color(img, 'yellow', p1, p2)
+
+    upper_arm_color(img, left_upper_arm_angle, left_shoulder, left_elbow)
+    upper_arm_color(img, right_upper_arm_angle, right_shoulder, right_elbow)
 
     ###print(f'left upper arm angle: {left_upper_arm_angle}')
     ###print(f'right upper arm angle: {right_upper_arm_angle}')
@@ -269,6 +278,8 @@ def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
 
     #Make lines yellow when bad posture
     if left_lower_arm_angle <= 50 or left_lower_arm_angle >= 140:
+        pose_detector.change_line_color(img, 'yellow', left_wrist, left_elbow)
+    if right_lower_arm_angle <= 50 or right_lower_arm_angle >= 140:
         pose_detector.change_line_color(img, 'yellow', right_wrist, right_elbow)
 
 
