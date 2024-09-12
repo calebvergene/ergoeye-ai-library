@@ -268,7 +268,7 @@ def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
     ###print(f'right lower arm angle: {right_lower_arm_angle}')
 
     #Make lines yellow when bad posture
-    if left_lower_arm_angle <= 40 or left_lower_arm_angle >= 150:
+    if left_lower_arm_angle <= 50 or left_lower_arm_angle >= 140:
         pose_detector.change_line_color(img, 'yellow', right_wrist, right_elbow)
 
 
