@@ -324,6 +324,7 @@ def calc_wrist(direction, index, wrist, elbow, img, pose_detector):
     ###print(f'left wrist angle: {left_wrist_angle}')
     ###print(f'right wrist angle: {right_wrist_angle}')
 
+
     if abs(left_wrist_angle) < abs(right_wrist_angle):
         wrist_angle = left_wrist_angle
     else:
