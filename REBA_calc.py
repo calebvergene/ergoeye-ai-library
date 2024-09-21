@@ -42,6 +42,8 @@ def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
         neck_angle = neck_angle * -1
     ###print(f'neck angle: {neck_angle}')
 
+    
+
     # Calculate REBA score
     if neck_angle >= 20:
         return 2
@@ -83,6 +85,15 @@ def calc_trunk(direction, shoulder, hip, img, pose_detector):
         trunk_angle = trunk_angle * -1
     ###print(f'trunk angle: {trunk_angle}')
 
+    def trunk_color(img, angle, p1, p2):
+        if angle >= 60:
+            pose_detector.change_line_color(img, 'red', p1, p2)
+        elif angle >= 20 or angle <= -20:
+            pose_detector.change_line_color(img, 'yellow', p1, p2)
+
+    trunk_color(img, trunk_angle, shoulder_midpoint_dict, hip_midpoint_dict)
+
+
     # Calculate REBA score
     if trunk_angle >= 60:
         return 4
@@ -90,9 +101,9 @@ def calc_trunk(direction, shoulder, hip, img, pose_detector):
         return 3
     elif trunk_angle >= 20:
         return 3
-    elif trunk_angle >= 0:
+    elif trunk_angle >= 5:
         return 2
-    elif trunk_angle <= 0:
+    elif trunk_angle <= -5:
         return 2
     else: 
         return 1
@@ -133,7 +144,7 @@ def calc_legs(direction, hip, knee, ankle, img, pose_detector):
     def leg_color(img, angle, p1, p2):
         if angle >= 60:
             pose_detector.change_line_color(img, 'red', p1, p2)
-        elif angle >= 30 or angle <= -40:
+        elif angle >= 30:
             pose_detector.change_line_color(img, 'yellow', p1, p2)
 
     leg_color(img, left_leg_angle, left_hip, left_knee)
