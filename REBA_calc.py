@@ -130,6 +130,16 @@ def calc_legs(direction, hip, knee, ankle, img, pose_detector):
     ###print(f'left leg angle: {left_leg_angle}')
     ###print(f'right leg angle: {right_leg_angle}')
 
+    def leg_color(img, angle, p1, p2):
+        if angle >= 60:
+            pose_detector.change_line_color(img, 'red', p1, p2)
+        elif angle >= 30 or angle <= -40:
+            pose_detector.change_line_color(img, 'yellow', p1, p2)
+
+    leg_color(img, left_leg_angle, left_hip, left_knee)
+    leg_color(img, right_leg_angle, right_hip, right_knee)
+
+
     if left_leg_angle > right_leg_angle:
         leg_angle = right_leg_angle
     else:
