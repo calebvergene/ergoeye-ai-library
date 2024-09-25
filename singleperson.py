@@ -8,7 +8,7 @@ def singleperson():
     Function for executing ergonomic assesments with multiple people in it
     """
     # Creates video object
-    cap = cv2.VideoCapture('PoseVideos/1.mp4')
+    cap = cv2.VideoCapture('PoseVideos/ErgoEyeDemo1.MOV')
     pose_detector = poseDetector()
 
     ## Processes image frames

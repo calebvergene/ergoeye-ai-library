@@ -85,11 +85,17 @@ def calc_trunk(direction, shoulder, hip, img, pose_detector):
         trunk_angle = trunk_angle * -1
     ###print(f'trunk angle: {trunk_angle}')
 
+
+    # Draws the line for trunk
     def trunk_color(img, angle, p1, p2):
+        p1_coords = (int(p1['x']), int(p1['y']))
+        p2_coords = (int(p2['x']), int(p2['y']))
         if angle >= 60:
-            pose_detector.change_line_color(img, 'red', p1, p2)
+            cv2.line(img, p1_coords, p2_coords, (61, 61, 255), 11)  # Red
         elif angle >= 20 or angle <= -20:
-            pose_detector.change_line_color(img, 'yellow', p1, p2)
+            cv2.line(img, p1_coords, p2_coords, (42, 212, 227), 11)  # Yellow
+        else:
+            cv2.line(img, p1_coords, p2_coords, (86, 183, 18), 11)  # Yellow
 
     trunk_color(img, trunk_angle, shoulder_midpoint_dict, hip_midpoint_dict)
 
@@ -250,7 +256,7 @@ def calc_upper_arm(direction, hip, shoulder, elbow, img, pose_detector):
     ###print(f'left upper arm angle: {left_upper_arm_angle}')
     ###print(f'right upper arm angle: {right_upper_arm_angle}')
 
-    if left_upper_arm_angle > right_upper_arm_angle:
+    if left_upper_arm_angle < right_upper_arm_angle:
         upper_arm_angle = right_upper_arm_angle
     else:
         upper_arm_angle = left_upper_arm_angle
@@ -449,7 +455,10 @@ def execute_REBA_test(pose_detector, img):
 
     ###print(final_score)
 
-    cv2.putText(img, f'REBA Score: {final_score}', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 
-                    2, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, f'ErgoEye Demo', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 
+                    2, (0, 0, 0), 8, cv2.LINE_AA)
+
+    cv2.putText(img, f'REBA Score: {final_score}', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 
+                    1.5, (200, 100, 0), 6, cv2.LINE_AA)
 
     

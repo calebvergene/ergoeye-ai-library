@@ -17,8 +17,8 @@ class poseDetector():
         self.smooth_landmarks=True
         self.enable_segmentation=False
         self.smooth_segmentation=True
-        self.min_detection_confidence=0.7
-        self.min_tracking_confidence=0.7
+        self.min_detection_confidence=0.95
+        self.min_tracking_confidence=0.95
         self.num_poses=4
 
 
@@ -82,7 +82,7 @@ class poseDetector():
                 # Now draw the usual body pose connections, excluding face connections (0-10)
                 connections = [
                 conn for conn in self.mpPose.POSE_CONNECTIONS
-                if conn[0] > 10 and conn[1] > 10  # Exclude face connections
+                if conn[0] > 10 and conn[1] > 10 # Exclude face connections
             ]
                 self.mpDraw.draw_landmarks(
                     img, 
