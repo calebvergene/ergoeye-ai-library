@@ -2,12 +2,6 @@ import numpy as np
 import cv2
 
 
-"""
-- need to calculate all REBA steps per frame
-
-- create a class that takes in (image,landmark_list) as input, then runs all calculations for REBA steps with each body test
-- then, calculate the final score and display the score for each frame
-"""
 
 def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
     """
@@ -459,5 +453,9 @@ def execute_REBA_test(pose_detector, img):
 
     cv2.putText(img, f'REBA Score: {final_score}', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 
                     1.5, (200, 100, 0), 6, cv2.LINE_AA)
+
+    pose_detector.find_critical_poses(img, final_score, landmark_list, 100, test='test')
+
+    
 
     

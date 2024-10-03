@@ -8,13 +8,12 @@ def singleperson():
     Function for executing ergonomic assesments with multiple people in it
     """
     # Creates video object
-    cap = cv2.VideoCapture('PoseVideos/1.mp4')
+    cap = cv2.VideoCapture('PoseVideos/ErgoEyeDemo1.MOV')
     pose_detector = poseDetector()
 
     ## Processes image frames
     while True:
         #raw_img = cv2.imread('PoseVideos/13.png')
-
 
         success, raw_img = cap.read()
 
@@ -41,6 +40,9 @@ def singleperson():
         #cv2.waitKey(5000)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+            
+        pose_detector.video_length += 1
+        print(pose_detector.critical_poses)
 
     cap.release()
     cv2.destroyAllWindows()

@@ -26,6 +26,9 @@ class poseDetector():
         self.pose = self.mpPose.Pose(self.static_image_mode, self.model_complexity, self.smooth_landmarks, self.enable_segmentation, self.smooth_segmentation, self.min_detection_confidence, self.min_tracking_confidence)
         self.landmark_dict = {0: "nose", 1: "left eye (inner)", 2: "left eye", 3: "left eye (outer)", 4: "right eye (inner)", 5: "right eye", 6: "right eye (outer)", 7: "left ear", 8: "right ear", 9: "mouth (left)", 10: "mouth (right)", 11: "left shoulder", 12: "right shoulder", 13: "left elbow", 14: "right elbow", 15: "left wrist", 16: "right wrist", 17: "left pinky", 18: "right pinky", 19: "left index", 20: "right index", 21: "left thumb", 22: "right thumb", 23: "left hip", 24: "right hip", 25: "left knee", 26: "right knee", 27: "left ankle", 28: "right ankle", 29: "left heel", 30: "right heel", 31: "left foot index", 32: "right foot index"}
 
+        self.critical_poses = []
+        self.critical_pose = {}
+        self.video_length = 0
     
     def find_pose(self, img, draw=True):
         """
@@ -205,3 +208,23 @@ class poseDetector():
                 cv2.line(img, p1_coords, p2_coords, (42, 212, 227), 11)  # Yellow
             elif color == "red":
                 cv2.line(img, p1_coords, p2_coords, (61, 61, 255), 11)  # Red
+
+    
+    def find_critical_poses(self, img, reba_score, landmark_list, frame, **limb_scores):
+        if self.video_length % frame == 0:
+            if self.video_length != 0:
+                self.critical_poses.append(self.critical_pose)
+            self.critical_pose = {
+            "img": img,
+            "reba_score": reba_score,
+            "landmark_list": landmark_list,
+            **limb_scores
+        }
+        if reba_score > self.critical_pose["reba_score"]:
+            self.critical_pose = {
+            "img": img,
+            "reba_score": reba_score,
+            "landmark_list": landmark_list,
+            **limb_scores
+        }
+
