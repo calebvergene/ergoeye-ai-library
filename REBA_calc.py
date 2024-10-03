@@ -420,7 +420,6 @@ def final_REBA_score(score_a, score_b):
 def execute_REBA_test(pose_detector, img):
     landmark_list = pose_detector.find_position(img)
     direction = pose_detector.find_direction(landmark_list) #based off ear
-
     neck_result = calc_neck(direction, landmark_list[0], [landmark_list[11], landmark_list[12]], [landmark_list[7], landmark_list[8]], img, pose_detector)
     ###print(f'neck score: {neck_result}')
 

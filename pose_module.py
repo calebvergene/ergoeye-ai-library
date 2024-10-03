@@ -3,8 +3,6 @@ import mediapipe as mp
 import math
 
 
-
-
 class poseDetector():
     """
     creates instance of video
@@ -17,8 +15,8 @@ class poseDetector():
         self.smooth_landmarks=True
         self.enable_segmentation=False
         self.smooth_segmentation=True
-        self.min_detection_confidence=0.95
-        self.min_tracking_confidence=0.95
+        self.min_detection_confidence=0.5
+        self.min_tracking_confidence=0.5
         self.num_poses=4
 
 
@@ -82,7 +80,7 @@ class poseDetector():
                 # Now draw the usual body pose connections, excluding face connections (0-10)
                 connections = [
                 conn for conn in self.mpPose.POSE_CONNECTIONS
-                if conn[0] > 10 and conn[1] > 10 # Exclude face connections
+                if conn[0] > 10 and conn[1] > 10 or conn[0] == 0 and conn[1] == 0 # Exclude face connections, except nose
             ]
                 self.mpDraw.draw_landmarks(
                     img, 

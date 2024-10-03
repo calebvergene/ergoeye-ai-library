@@ -8,7 +8,7 @@ def singleperson():
     Function for executing ergonomic assesments with multiple people in it
     """
     # Creates video object
-    cap = cv2.VideoCapture('PoseVideos/ErgoEyeDemo1.MOV')
+    cap = cv2.VideoCapture('PoseVideos/1.mp4')
     pose_detector = poseDetector()
 
     ## Processes image frames
@@ -29,11 +29,12 @@ def singleperson():
     
         img = pose_detector.find_pose(raw_img)
         #img = pose_detector.blur_face(img)
+        
 
         try:
             execute_REBA_test(pose_detector, img)
         except Exception as e:
-            print('Error: ', e)
+            print('Error:', e)
             continue
 
         cv2.imshow("Image", img)
