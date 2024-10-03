@@ -210,21 +210,19 @@ class poseDetector():
                 cv2.line(img, p1_coords, p2_coords, (61, 61, 255), 11)  # Red
 
     
-    def find_critical_poses(self, img, reba_score, landmark_list, frame, **limb_scores):
+    def find_critical_poses(self, img, reba_score, frame, **limb_scores):
         if self.video_length % frame == 0:
             if self.video_length != 0:
                 self.critical_poses.append(self.critical_pose)
             self.critical_pose = {
             "img": img,
             "reba_score": reba_score,
-            "landmark_list": landmark_list,
             **limb_scores
         }
         if reba_score > self.critical_pose["reba_score"]:
             self.critical_pose = {
             "img": img,
             "reba_score": reba_score,
-            "landmark_list": landmark_list,
             **limb_scores
         }
 
