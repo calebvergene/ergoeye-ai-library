@@ -40,6 +40,7 @@ def calc_neck(direction, nose, shoulder, ear, img, pose_detector):
 
     # Calculate REBA score
     if neck_angle >= 20:
+        critical_limbs.append({"neck": neck_angle})
         return 2
     elif neck_angle <= 0:
         return 2
@@ -96,6 +97,7 @@ def calc_trunk(direction, shoulder, hip, img, pose_detector):
 
     # Calculate REBA score
     if trunk_angle >= 60:
+        critical_limbs.append({"trunk": trunk_angle})
         return 4
     elif trunk_angle <= -20:
         return 3
@@ -158,6 +160,7 @@ def calc_legs(direction, hip, knee, ankle, img, pose_detector):
 
     # Calculate REBA score
     if leg_angle >= 60:
+        critical_limbs.append({"leg": leg_angle})
         return 3
     elif leg_angle >= 30:
         return 2
@@ -257,6 +260,7 @@ def calc_upper_arm(direction, hip, shoulder, elbow, img, pose_detector):
 
     # Calculate REBA score
     if upper_arm_angle >= 90:
+        critical_limbs.append({"upper_arm": upper_arm_angle})
         return 4
     elif upper_arm_angle >= 45:
         return 3
@@ -311,8 +315,10 @@ def calc_lower_arm(direction, wrist, shoulder, elbow, img, pose_detector):
 
     # Calculate REBA score
     if lower_arm_angle <= 80:
+        critical_limbs.append({"lower_arm": lower_arm_angle})
         return 2
     elif lower_arm_angle >= 120:
+        critical_limbs.append({"lower_arm": lower_arm_angle})
         return 2
     else: 
         return 1
@@ -412,6 +418,11 @@ def final_REBA_score(score_a, score_b):
 
 
 def execute_REBA_test(pose_detector, img):
+
+    # per frame, adds the critical limbs to the list
+    global critical_limbs
+    critical_limbs = []
+
     landmark_list = pose_detector.find_position(img)
     direction = pose_detector.find_direction(landmark_list) #based off ear
     neck_result = calc_neck(direction, landmark_list[0], [landmark_list[11], landmark_list[12]], [landmark_list[7], landmark_list[8]], img, pose_detector)
@@ -454,5 +465,5 @@ def execute_REBA_test(pose_detector, img):
     cv2.putText(img, f'REBA Score: {final_score}', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 
                     1.5, (200, 100, 0), 6, cv2.LINE_AA)
 
-    pose_detector.find_critical_poses(img, final_score, 100, test='test')
+    pose_detector.find_critical_poses(img, final_score, 100, critical_limbs)
     

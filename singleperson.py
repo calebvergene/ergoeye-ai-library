@@ -42,7 +42,8 @@ def singleperson():
             break
             
         pose_detector.video_length += 1
-        print(pose_detector.critical_poses)
+    
+    print(pose_detector.critical_poses)
 
     cap.release()
     cv2.destroyAllWindows()

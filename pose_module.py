@@ -28,6 +28,8 @@ class poseDetector():
 
         self.critical_poses = []
         self.critical_pose = {}
+        
+        self.critical_limbs = []
         self.video_length = 0
     
     def find_pose(self, img, draw=True):
@@ -210,19 +212,23 @@ class poseDetector():
                 cv2.line(img, p1_coords, p2_coords, (61, 61, 255), 11)  # Red
 
     
-    def find_critical_poses(self, img, reba_score, frame, **limb_scores):
+    def find_critical_poses(self, img, reba_score, frame, critical_limb):
+        """
+        finds most dangerous poses in video per specified amount of frames, adds the frame to class list
+        """
+        self.critical_limbs.append({self.video_length: critical_limb})
         if self.video_length % frame == 0:
             if self.video_length != 0:
                 self.critical_poses.append(self.critical_pose)
             self.critical_pose = {
             "img": img,
             "reba_score": reba_score,
-            **limb_scores
+            "critical_libs": critical_limb
         }
         if reba_score > self.critical_pose["reba_score"]:
             self.critical_pose = {
             "img": img,
             "reba_score": reba_score,
-            **limb_scores
+            "critical_limbs": self.critical_limbs[self.video_length]
         }
 
