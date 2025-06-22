@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/2fae9a81-d17e-4567-9ec9-1e071af88040
+
 # ErgoEye
 
 This library automates the Rapid Entire Body Assessment (REBA) to rapidly evaluate the risk of musculoskeletal disorders (MSD), addressing the $180 billion global problem of workplace musculoskeletal disorders through AI-powered ergonomic assessment. 
@@ -12,8 +14,6 @@ ErgoEye uses computer vision to analyze worker posture in real-time, automating 
 - **Real-time Monitoring** - Live posture analysis with real-time data processing
 
 The AI identifies ergonomic risks, compares movements against industry standards, and generates personalized recommendations to help workers improve their posture and prevent injuries before they occur.
-
-https://github.com/user-attachments/assets/2fae9a81-d17e-4567-9ec9-1e071af88040
 
 ## Local Dependencies
 
